@@ -98,14 +98,15 @@ namespace CLAP
             {
                 throw new MissingVerbException();
             }
+
+            if (!verb.Contains(s_delimiters))
+            {
+                //No delimiter ? Take the first one
+                matchingType = m_types.First();
+                //args[0] = matchingType.Name + args[0];
+            }
             else
             {
-
-                if (!verb.Contains(s_delimiters))
-                {
-                    //No delimiter ? Take the first one
-                    matchingType = m_types.First();
-                }
 
                 var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
 
@@ -126,10 +127,10 @@ namespace CLAP
                 }
             }
 
-            return new ParserRunner(matchingType, registration, HelpGenerator);        
+            return new ParserRunner(matchingType, registration, HelpGenerator);
         }
 
-        
+
 
         private ParserRunner GetSingleTypeParser(string[] args, ParserRegistration registration)
         {
