@@ -24,6 +24,7 @@ namespace CLAP
         internal Dictionary<string, Action<string>> RegisteredHelpHandlers { get; private set; }
         internal Action RegisteredEmptyHandler { get; private set; }
         internal Action<ExceptionContext> RegisteredErrorHandler { get; private set; }
+        internal bool DoNotModifyTargetInvocationException { get; private set; }
         internal Action<PreVerbExecutionContext> RegisteredPreVerbInterceptor { get; private set; }
         internal Action<PostVerbExecutionContext> RegisteredPostVerbInterceptor { get; private set; }
 
@@ -111,7 +112,8 @@ namespace CLAP
         /// Registers an error handler that is executed when an exception is thrown
         /// </summary>
         /// <param name="handler">The action to be executed</param>
-        public void ErrorHandler(Action<ExceptionContext> handler)
+        /// <param name="doNotModifyTargetInvocationException">if true, TargetInvocationException aren't modified. If false, TargetInvocationException are serialized for conserving StackTrace</param>
+        public void ErrorHandler(Action<ExceptionContext> handler, bool doNotModifyTargetInvocationException = false)
         {
             if (handler == null)
             {
@@ -124,6 +126,7 @@ namespace CLAP
             }
 
             RegisteredErrorHandler = handler;
+            DoNotModifyTargetInvocationException = doNotModifyTargetInvocationException;
         }
 
         /// <summary>

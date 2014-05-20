@@ -90,6 +90,7 @@ namespace CLAP
             Debug.Assert(args.Any());
 
             var verb = args[0];
+            Type matchingType;
 
             // if the first arg is not a verb - throw
             //
@@ -97,31 +98,36 @@ namespace CLAP
             {
                 throw new MissingVerbException();
             }
-
-            if (!verb.Contains(s_delimiters))
+            else
             {
-                throw new MultiParserMissingClassNameException();
+
+                if (!verb.Contains(s_delimiters))
+                {
+                    //No delimiter ? Take the first one
+                    matchingType = m_types.First();
+                }
+
+                var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
+
+                if (parts.Length != 2)
+                {
+                    throw new InvalidVerbException();
+                }
+
+                var typeNameOrAlias = parts[0];
+
+                args[0] = args[0].Substring(typeNameOrAlias.Length + 1);
+
+                matchingType = registration.GetTargetType(typeNameOrAlias);
+
+                if (matchingType == null)
+                {
+                    throw new UnknownParserTypeException(typeNameOrAlias);
+                }
             }
 
-            var parts = verb.Split(s_delimiters, StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length != 2)
-            {
-                throw new InvalidVerbException();
-            }
-
-            var typeNameOrAlias = parts[0];
-
-            args[0] = args[0].Substring(typeNameOrAlias.Length + 1);
-
-            var matchingType = registration.GetTargetType(typeNameOrAlias);
-
-            if (matchingType == null)
-            {
-                throw new UnknownParserTypeException(typeNameOrAlias);
-            }
-
-return new ParserRunner(matchingType, registration, HelpGenerator);        }
+            return new ParserRunner(matchingType, registration, HelpGenerator);        
+        }
 
         
 
