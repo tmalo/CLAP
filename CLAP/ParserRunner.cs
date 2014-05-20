@@ -286,6 +286,9 @@ namespace CLAP
             }
             catch (TargetInvocationException tex)
             {
+                if (m_registration.RegisteredErrorHandler != null && m_registration.DoNotModifyTargetInvocationException)
+                    verbException = tex;
+
                 PreserveStackTrace(tex.InnerException);
                 verbException = tex.InnerException;
             }
